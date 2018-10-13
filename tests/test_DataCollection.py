@@ -66,29 +66,29 @@ class Test_DataCollection(unittest.TestCase):
 
     def test_onTimerInterruptAppendToData(self):
         self.myInstance._timerInterval()
-        self.assertEquals(len(self.myInstance.measurements), 1)
+        self.assertEqual(len(self.myInstance.measurements), 1)
 
     def test_onTimerInterruptStoreFetchedData(self):
         self.myInstance.getData = MagicMock(return_value=42)
         self.myInstance._timerInterval()
-        self.assertEquals(self.myInstance.measurements[0].data, 42)
+        self.assertEqual(self.myInstance.measurements[0].data, 42)
 
     def test_onTimerInterruptStoreTimeStamp(self):
         time.time = MagicMock(return_value=43)
         self.myInstance._timerInterval()
-        self.assertEquals(self.myInstance.measurements[0].time, 43)
+        self.assertEqual(self.myInstance.measurements[0].time, 43)
 
     def test_onTimerInterruptStoreAmountOfData(self):
         often = 9
         for i in range(0,often):
-            myData = getRandomFloat()
-            myTime = getRandomFloat()
+            myData = random.uniform(0, 1456315)
+            myTime = i
             self.myInstance.getData = MagicMock(return_value=myData)
             time.time = MagicMock(return_value=myTime)
             self.myInstance._timerInterval()
-            self.assertEquals(self.myInstance.measurements[i].data, myData)
-            self.assertEquals(self.myInstance.measurements[i].time, myTime)
-        self.assertEquals(len(self.myInstance.measurements), often)
+            self.assertEqual(self.myInstance.measurements[i].data, myData)
+            self.assertEqual(self.myInstance.measurements[i].time, myTime)
+        self.assertEqual(len(self.myInstance.measurements), often)
 
     def test_capMeasurementsSize(self): 
         self.myInstance.span_s = 50
@@ -97,11 +97,13 @@ class Test_DataCollection(unittest.TestCase):
             self.myInstance.getData = MagicMock(return_value=i)
             time.time = MagicMock(return_value=i)
             self.myInstance._timerInterval()
-        self.assertEquals(len(self.myInstance.measurements), self.myInstance.span_s)
-        self.assertEquals(self.myInstance.measurements[0].data, 50)
+        self.assertEqual(len(self.myInstance.measurements), self.myInstance.span_s)
+        self.assertEqual(self.myInstance.measurements[0].data, 50)
 
-def getRandomFloat():
-    return random.uniform(0, 1456315)
+    def test_getCurrentData(self):
+        pointer, read_only_flag = self.myInstance.measurements.__array_interface__['data']
+        returnPointer, read_only_flag = self.myInstance.getMeasurements().__array_interface__['data']
+        self.assertEqual(returnPointer, pointer)
 
 if __name__ == '__main__':
     unittest.main()

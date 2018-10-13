@@ -27,6 +27,9 @@ class DataCollection:
         self._timerInterval()
     def stopSampling(self):
         self.timer.stop()
+    def getMeasurements(self):
+        return self.measurements
+
 
 class Measurement:
     def __init__(self, data, time):
