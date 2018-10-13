@@ -29,6 +29,16 @@ class DataCollection:
         self._timer.stop()
     def getMeasurements(self):
         return self._measurements
+    def getSpan(self):
+        return self._span_s
+    def changeSpan(self, s=None):
+        self._span_s = s if s != None else self._span_s
+    def getInterval(self):
+        return self._interval_ms
+    def changeInterval(self, ms=None):
+        self._interval_ms = ms if ms != None else self._interval_ms
+        self.stopSampling()
+        self.startSampling()
 
 
 class Measurement:

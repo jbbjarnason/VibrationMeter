@@ -105,5 +105,33 @@ class Test_DataCollection(unittest.TestCase):
         returnPointer, read_only_flag = self.myInstance.getMeasurements().__array_interface__['data']
         self.assertEqual(returnPointer, pointer)
 
+    def test_getSpan(self):
+        self.assertEqual(self.myInstance._span_s, self.myInstance.getSpan())
+    def test_changeSpan(self):
+        self.myInstance.changeSpan(5461)
+        self.assertEqual(self.myInstance._span_s, 5461)
+    def test_onlyChangeSpanIfProvided(self):
+        lastSpan = self.myInstance._span_s
+        self.myInstance.changeSpan()
+        self.assertEqual(self.myInstance._span_s, lastSpan)
+
+    def test_getInterval(self):
+        self.assertEqual(self.myInstance._interval_ms, self.myInstance.getInterval())
+    def test_changeInterval(self):
+        self.myInstance.changeInterval(465)
+        self.assertEqual(self.myInstance._interval_ms, 465)
+    def test_changeIntervalRestartsTimer(self):
+        self.myInstance.stopSampling    = MagicMock()
+        self.myInstance.startSampling   = MagicMock()
+        self.myInstance.changeInterval(465)
+        self.myInstance.stopSampling.assert_called()
+        self.myInstance.startSampling.assert_called()
+
+    def test_onlyChangeIntervalIfProvided(self):
+        last = self.myInstance._interval_ms
+        self.myInstance.changeInterval()
+        self.assertEqual(self.myInstance._interval_ms, last)
+
+
 if __name__ == '__main__':
     unittest.main()
