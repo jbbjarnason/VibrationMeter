@@ -33,8 +33,3 @@ class Measurement:
         self.data = data
         self.time = time
 
-    # def __trunc__(self):
-    #     del self.data
-    #     del self.time
-        # del self
-

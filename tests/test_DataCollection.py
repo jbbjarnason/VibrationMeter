@@ -100,8 +100,6 @@ class Test_DataCollection(unittest.TestCase):
         self.assertEquals(len(self.myInstance.measurements), self.myInstance.span_s)
         self.assertEquals(self.myInstance.measurements[0].data, 50)
 
-        # create span argument to datacollection
-
 def getRandomFloat():
     return random.uniform(0, 1456315)
 
