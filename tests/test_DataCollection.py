@@ -102,7 +102,7 @@ class Test_DataCollection(unittest.TestCase):
 
     def test_getCurrentData(self):
         pointer, read_only_flag = self.myInstance._measurements.data.__array_interface__['data']
-        returnPointer, read_only_flag = self.myInstance.getData().__array_interface__['data']
+        returnPointer, read_only_flag = self.myInstance.getData()["data"].__array_interface__['data']
         self.assertEqual(returnPointer, pointer)
 
     def test_getSpan(self):

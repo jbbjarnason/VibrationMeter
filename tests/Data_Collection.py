@@ -37,7 +37,8 @@ class DataCollection:
     def stopSampling(self):
         self._timer.stop()
     def getData(self):
-        return self._measurements.data
+        self.logger.info(msg="Returning "+str(len(self._measurements))+ " items of data")
+        return {"data":self._measurements.data, "time":self._measurements.time}
     def getSpan(self):
         return self._span_s
     def changeSpan(self, s=None):
