@@ -71,12 +71,12 @@ class Test_DataCollection(unittest.TestCase):
     def test_onTimerInterruptStoreFetchedData(self):
         self.myInstance._getData = MagicMock(return_value=42)
         self.myInstance._timerInterval()
-        self.assertEqual(self.myInstance._measurements[0].data, 42)
+        self.assertEqual(self.myInstance._measurements.data[0], 42)
 
     def test_onTimerInterruptStoreTimeStamp(self):
         time.time = MagicMock(return_value=43)
         self.myInstance._timerInterval()
-        self.assertEqual(self.myInstance._measurements[0].time, 43)
+        self.assertEqual(self.myInstance._measurements.time[0], 43)
 
     def test_onTimerInterruptStoreAmountOfData(self):
         often = 9
@@ -86,9 +86,9 @@ class Test_DataCollection(unittest.TestCase):
             self.myInstance._getData = MagicMock(return_value=myData)
             time.time = MagicMock(return_value=myTime)
             self.myInstance._timerInterval()
-            self.assertEqual(self.myInstance._measurements[i].data, myData)
-            self.assertEqual(self.myInstance._measurements[i].time, myTime)
-        self.assertEqual(len(self.myInstance._measurements), often)
+            self.assertEqual(self.myInstance._measurements.data[i], myData)
+            self.assertEqual(self.myInstance._measurements.time[i], myTime)
+        self.assertEqual(len(self.myInstance._measurements.data), often)
 
     def test_capMeasurementsSize(self): 
         self.myInstance._span_s = 50
@@ -98,11 +98,11 @@ class Test_DataCollection(unittest.TestCase):
             time.time = MagicMock(return_value=i)
             self.myInstance._timerInterval()
         self.assertEqual(len(self.myInstance._measurements), self.myInstance._span_s)
-        self.assertEqual(self.myInstance._measurements[0].data, 50)
+        self.assertEqual(self.myInstance._measurements.data[0], 50)
 
     def test_getCurrentData(self):
-        pointer, read_only_flag = self.myInstance._measurements.__array_interface__['data']
-        returnPointer, read_only_flag = self.myInstance.getMeasurements().__array_interface__['data']
+        pointer, read_only_flag = self.myInstance._measurements.data.__array_interface__['data']
+        returnPointer, read_only_flag = self.myInstance.getData().__array_interface__['data']
         self.assertEqual(returnPointer, pointer)
 
     def test_getSpan(self):

@@ -9,7 +9,7 @@ class DataCollection:
         self._span_s         = span_s if span_s != None else 60
         if not callable(callback): raise Exception("Sample function not provided")
         self._getData        = callback
-        self._measurements   = np.array([])
+        self._measurements   = Measurements()
         self._setInterval()
         self._timer          = threading.Timer(self._intervalTime, self._timerInterval)
         self.logger = logging.getLogger("DataCollection."+str(self._instance))
@@ -21,25 +21,23 @@ class DataCollection:
 
     def _timerInterval(self):
         currTime = time.time()
-        self._measurements = np.append(self._measurements, 
-                            Measurement(data=self._getData(), 
-                                        time=currTime))
+        self._measurements.append(self._getData(), currTime)
         self._tryEraseOldestData(currTime)
         self._timer.start()
     def _tryEraseOldestData(self, currTime):
         oldTime = currTime - self._span_s
-        if (self._measurements[0].time <= oldTime):
-            self.logger.debug(msg="Erase measurement from time "+str(self._measurements[0].time)\
+        if (self._measurements.tryGetFirstTime()<= oldTime):
+            self.logger.debug(msg="Erase measurement from time "+str(self._measurements.time[0])\
                               +" at time "+str(currTime))
-            self._measurements = np.delete(self._measurements, 0)
+            self._measurements.delete(0)
     def _setInterval(self):
         self._intervalTime = self._interval_ms/1000.0
     def startSampling(self):
         self._timerInterval()
     def stopSampling(self):
         self._timer.stop()
-    def getMeasurements(self):
-        return self._measurements
+    def getData(self):
+        return self._measurements.data
     def getSpan(self):
         return self._span_s
     def changeSpan(self, s=None):
@@ -55,8 +53,19 @@ class DataCollection:
         self.startSampling()
 
 
-class Measurement:
-    def __init__(self, data, time):
-        self.data = data
-        self.time = time
+class Measurements:
+    def __init__(self):
+        self.data = np.array([])
+        self.time = np.array([])
+    def append(self, data1, time):
+        self.data = np.append(self.data, data1)
+        self.time = np.append(self.time, time)
+    def delete(self, index):
+        self.data = np.delete(self.data, index)
+        self.time = np.delete(self.time, index)
+    def tryGetFirstTime(self):
+        return self.time[0] if len(self.time) > 0 else -1
+    def __len__(self):
+        return len(self.data)
+
 
