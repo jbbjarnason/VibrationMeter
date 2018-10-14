@@ -17,3 +17,10 @@ Initial idea is to use accelerometer connected to a computer which logs and anal
 ## Nice to have
 - Camera to detect person walking by
 - Supervised machine learning, classifying persons
+
+## Dependancies
+- $ pip3 install numpy
+- $ pip3 install threading
+- $ pip3 install scipy
+- $ pip3 install matplotlib
+- $ sudo apt install python3-tk

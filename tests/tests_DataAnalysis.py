@@ -15,3 +15,6 @@ class Test_DataAnalysis(unittest.TestCase):
     def test_defaultInstanceIsOne(self):
         testInstance = DataAnalysis(callback=self.getData)
         self.assertEqual(testInstance._instance,1)
+
+    def test_fourierTransformData(self):
+        pass
