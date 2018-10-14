@@ -121,9 +121,11 @@ class Test_DataCollection(unittest.TestCase):
         self.myInstance.changeInterval(465)
         self.assertEqual(self.myInstance._interval_ms, 465)
     def test_changeIntervalRestartsTimer(self):
+        self.myInstance._setInterval    = MagicMock()
         self.myInstance.stopSampling    = MagicMock()
         self.myInstance.startSampling   = MagicMock()
         self.myInstance.changeInterval(465)
+        self.myInstance._setInterval.assert_called()
         self.myInstance.stopSampling.assert_called()
         self.myInstance.startSampling.assert_called()
 
