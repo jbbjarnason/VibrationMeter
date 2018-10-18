@@ -11,7 +11,7 @@ class DataAnalysis:
         self._instance       = instance if instance != None else 1
         self.maxReducedTimeArraySize = 50
 
-    def analyze(self, dictMeasurements): # data should be a dictionary including {"data":array, "time":array}
+    def fourierTransform(self, dictMeasurements): # data should be a dictionary including {"data":array, "time":array}
         signal = dictMeasurements["data"]
         time = dictMeasurements["time"]
         fourier = scipy.fftpack.fft(signal)
@@ -21,7 +21,7 @@ class DataAnalysis:
                 "fourier":fourier, "freq":freq}
 
     def plot(self, dictMeasurements):
-        data = self.analyze(dictMeasurements)
+        data = self.fourierTransform(dictMeasurements)
         n = data["freq"].size
         plt = matplotlib.pyplot
         plt.plot(data["freq"][:n//2], abs(data["fourier"][:n//2]))

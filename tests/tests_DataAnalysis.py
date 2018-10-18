@@ -26,22 +26,22 @@ class Test_DataAnalysis(unittest.TestCase):
         self.assertEqual(testInstance._instance,1)
 
     def test_fourierTransformData(self):
-        # self.myInstance.tryGetSamplingPeriod = MagicMock(return_value=0.1)
-        self.myInstance.analyze(self.testData)
+        self.myInstance.fourierTransform(self.testData)
         scipy.fftpack.fft.assert_called_with(self.testData["data"])
     def test_getFreqForFourierTransfor(self):
         samplingFreq = 10 # Hz
         self.myInstance._tryGetSamplingFreq = MagicMock(return_value=samplingFreq)
-        self.myInstance.analyze(self.testData)
+        self.myInstance.fourierTransform(self.testData)
         self.myInstance._tryGetSamplingFreq.assert_called_with(self.testData["time"])
         scipy.fftpack.fftfreq.assert_called_with(self.testData["data"].size, samplingFreq)
 
     def test_returnFourierData(self):
         self.myInstance._tryGetSamplingFreq = MagicMock(return_value=10)
-        self.assertEqual(self.myInstance.analyze(self.testData), {"signal":self.testData["data"],
-                                                                  "time":self.testData["time"],
-                                                                  "fourier":fftReturnVal,
-                                                                  "freq":fftFreqReturnVal})
+        self.assertEqual(self.myInstance.fourierTransform(self.testData),
+                         {"signal":self.testData["data"],
+                          "time":self.testData["time"],
+                          "fourier":fftReturnVal,
+                          "freq":fftFreqReturnVal})
 
     def test_getReducedTimeArray(self):
         self.myInstance.maxReducedTimeArraySize = 5
@@ -79,19 +79,19 @@ class Test_DataAnalysis(unittest.TestCase):
         out = self.myInstance._tryGetSamplingFreq("I have already overridden delt time array returning deltaTime")
         self.assertEqual(out, 1/np.median(deltaTime))
 
-    def test_locallyPlotFourierTransformationRequestsAnAnalyze(self):
-        self.myInstance.analyze = MagicMock()
+    def test_locallyPlotFourierTransformationRequestsFourierTransform(self):
+        self.myInstance.fourierTransform = MagicMock()
         self.myInstance.plot(self.testData)
-        self.myInstance.analyze.assert_called_with(self.testData)
+        self.myInstance.fourierTransform.assert_called_with(self.testData)
 
     def test_locallyPlotFourierTransformationPlots(self):
         myDictonary = dict(signal=np.array([1, 10]), time=np.array([2, 20]), fourier=np.array([-3, -30]), freq=np.array([-4, -40]))
-        self.myInstance.analyze = MagicMock(return_value=myDictonary)
+        self.myInstance.fourierTransform = MagicMock(return_value=myDictonary)
         matplotlib.pyplot.plot = MagicMock()
         matplotlib.pyplot.grid = MagicMock()
         matplotlib.pyplot.show = MagicMock()
         self.myInstance.plot(self.testData)
-        n = 2
+        n = 2 #size of created np arrays above
         matplotlib.pyplot.plot.assert_called_with(myDictonary["freq"][:n//2], abs(myDictonary["fourier"][:n//2]))
         matplotlib.pyplot.grid.assert_called()
         matplotlib.pyplot.show.assert_called()
