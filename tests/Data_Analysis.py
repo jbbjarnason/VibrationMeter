@@ -1,5 +1,5 @@
 import scipy.fftpack
-# from scipy.fftpack import fft, ifft, fftfreq
+import matplotlib.pyplot
 import numpy as np
 import random
 
@@ -19,12 +19,14 @@ class DataAnalysis:
         freq = scipy.fftpack.fftfreq(signal.size, samplingFreq)
         return {"signal":signal, "time":time,
                 "fourier":fourier, "freq":freq}
-        # import matplotlib.pyplot as plt
-        # f = freq[:numberOfSamples // 2]
-        # s = abs(fourierOfSignal[:numberOfSamples // 2])
-        # plt.plot(f, s)
-        # plt.grid()
-        # plt.show()
+
+    def plot(self, dictMeasurements):
+        data = self.analyze(dictMeasurements)
+        n = data["freq"].size
+        plt = matplotlib.pyplot
+        plt.plot(data["freq"][:n//2], abs(data["fourier"][:n//2]))
+        plt.grid()
+        plt.show()
 
     def _tryGetSamplingFreq(self, timeArray): # Hz
         med = np.median(self._calcTimeDelta(timeArray))
@@ -43,4 +45,4 @@ if __name__ == '__main__':
     for i in range(0,100):
         data = np.append(data, random.uniform(0, 1000))
         time = np.append(time, (i+1))
-    analysis.analyze({"data":data, "time":time}, 1/800)
+    analysis.plot({"data":data, "time":time})

@@ -3,7 +3,7 @@ import numpy as np
 from mock import MagicMock
 from Data_Analysis import DataAnalysis
 import scipy.fftpack
-# from scipy.fftpack import fft, ifft, fftfreq
+import matplotlib.pyplot
 fftReturnVal = "fft called"
 fftFreqReturnVal = "fftfreq called"
 scipy.fftpack.fft = MagicMock(return_value=fftReturnVal)
@@ -64,7 +64,7 @@ class Test_DataAnalysis(unittest.TestCase):
         out = self.myInstance._calcTimeDelta("I have already overridden reduced time array returning someTime")
         np.testing.assert_almost_equal(out, deltaTime)
 
-    def test_getSamplingPeriodReturnsNoneWhenTimeArrayEmpty(self):
+    def test_getSamplingPeriodReturnsNoneWhenTimeArrayEmpty(self): # THROWS Runtime warning, which is actually useful
         self.assertIsNone(self.myInstance._tryGetSamplingFreq(np.array([])))
 
     def test_getSamplingPeriodRequestReducedTimeArray(self):
@@ -79,6 +79,22 @@ class Test_DataAnalysis(unittest.TestCase):
         out = self.myInstance._tryGetSamplingFreq("I have already overridden delt time array returning deltaTime")
         self.assertEqual(out, 1/np.median(deltaTime))
 
+    def test_locallyPlotFourierTransformationRequestsAnAnalyze(self):
+        self.myInstance.analyze = MagicMock()
+        self.myInstance.plot(self.testData)
+        self.myInstance.analyze.assert_called_with(self.testData)
+
+    def test_locallyPlotFourierTransformationPlots(self):
+        myDictonary = dict(signal=np.array([1, 10]), time=np.array([2, 20]), fourier=np.array([-3, -30]), freq=np.array([-4, -40]))
+        self.myInstance.analyze = MagicMock(return_value=myDictonary)
+        matplotlib.pyplot.plot = MagicMock()
+        matplotlib.pyplot.grid = MagicMock()
+        matplotlib.pyplot.show = MagicMock()
+        self.myInstance.plot(self.testData)
+        n = 2
+        matplotlib.pyplot.plot.assert_called_with(myDictonary["freq"][:n//2], abs(myDictonary["fourier"][:n//2]))
+        matplotlib.pyplot.grid.assert_called()
+        matplotlib.pyplot.show.assert_called()
 
 
 if __name__ == '__main__':
