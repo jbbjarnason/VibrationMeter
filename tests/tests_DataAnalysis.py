@@ -31,20 +31,55 @@ class Test_DataAnalysis(unittest.TestCase):
         scipy.fftpack.fft.assert_called_with(self.testData["data"])
     def test_getFreqForFourierTransfor(self):
         samplingFreq = 10 # Hz
-        self.myInstance.tryGetSamplingFreq = MagicMock(return_value=samplingFreq)
+        self.myInstance._tryGetSamplingFreq = MagicMock(return_value=samplingFreq)
         self.myInstance.analyze(self.testData)
-        self.myInstance.tryGetSamplingFreq.assert_called_with(self.testData["time"])
+        self.myInstance._tryGetSamplingFreq.assert_called_with(self.testData["time"])
         scipy.fftpack.fftfreq.assert_called_with(self.testData["data"].size, samplingFreq)
 
     def test_returnFourierData(self):
-        self.myInstance.tryGetSamplingFreq = MagicMock(return_value=10)
+        self.myInstance._tryGetSamplingFreq = MagicMock(return_value=10)
         self.assertEqual(self.myInstance.analyze(self.testData), {"signal":self.testData["data"],
                                                                   "time":self.testData["time"],
                                                                   "fourier":fftReturnVal,
                                                                   "freq":fftFreqReturnVal})
 
-    def test_getSamplingPeriod(self):
-        pass
+    def test_getReducedTimeArray(self):
+        self.myInstance.maxReducedTimeArraySize = 5
+        out = self.myInstance._getReducedTimeArray(self.testData["time"])
+        np.testing.assert_array_equal(out, self.testData["time"][:5])
+        self.myInstance.maxReducedTimeArraySize = 50
+        out = self.myInstance._getReducedTimeArray(self.testData["time"])
+        np.testing.assert_array_equal(out, self.testData["time"])
+
+    def test_getTimeDeltaArrayRequestReducedTimeArray(self):
+        self.myInstance._getReducedTimeArray = MagicMock()
+        timeArray = np.array([1,23,3,4,5,13,415])
+        self.myInstance._calcTimeDelta(timeArray)
+        self.myInstance._getReducedTimeArray.assert_called_with(timeArray)
+
+    def test_getTimeDeltaArrayRequestReducedTimeArray(self):
+        someTime = np.array([1.0,1.2,1.5,1.7,1.9,2.0])
+        deltaTime = np.array([0.2,0.3,0.2,0.2,0.1])
+        self.myInstance._getReducedTimeArray = MagicMock(return_value=someTime)
+        out = self.myInstance._calcTimeDelta("I have already overridden reduced time array returning someTime")
+        np.testing.assert_almost_equal(out, deltaTime)
+
+    def test_getSamplingPeriodReturnsNoneWhenTimeArrayEmpty(self):
+        self.assertIsNone(self.myInstance._tryGetSamplingFreq(np.array([])))
+
+    def test_getSamplingPeriodRequestReducedTimeArray(self):
+        self.myInstance._calcTimeDelta = MagicMock()
+        timeArray = np.array([1, 23, 3, 4, 5, 13, 415])
+        self.myInstance._tryGetSamplingFreq(timeArray)
+        self.myInstance._calcTimeDelta.assert_called_with(timeArray)
+
+    def test_getSamplingPeriodReturnsMedianOfTimeDelta(self):
+        deltaTime = np.array([0.2,0.3,0.2,0.2,0.1])
+        self.myInstance._calcTimeDelta = MagicMock(return_value=deltaTime)
+        out = self.myInstance._tryGetSamplingFreq("I have already overridden delt time array returning deltaTime")
+        self.assertEqual(out, 1/np.median(deltaTime))
+
+
 
 if __name__ == '__main__':
     unittest.main()
