@@ -1,4 +1,5 @@
 import scipy.fftpack
+import scipy.signal
 import matplotlib.pyplot
 import numpy as np
 import random
@@ -6,10 +7,13 @@ import random
 class DataAnalysis:
     maxReducedTimeArraySize: int
 
-    def __init__(self, instance=None, callback=None, samplingFreq=None,
-                 lowPassFreq=None, highPassFreq=None, integralOrder=None):
-        self._instance       = instance if instance != None else 1
+    def __init__(self,  instance=None, callback=None, cutOffFrequencies=None,
+                        integralOrder=None, lengthOfFilter=None):
+        self._instance          = instance          if instance != None         else 1
         self.maxReducedTimeArraySize = 50
+        # 251 is designed to obtain the sharpest possible cut off, Figure 6.39 from Signals and systems Alan Oppenheimer
+        self.lengthOfFilter     = lengthOfFilter    if lengthOfFilter!= None    else 251
+        self.cutOffFrequencies  = cutOffFrequencies if cutOffFrequencies!= None else np.array([10])
 
     def fourierTransform(self, dictMeasurements): # data should be a dictionary including {"data":array, "time":array}
         signal = dictMeasurements["data"]
@@ -37,6 +41,9 @@ class DataAnalysis:
 
     def _getReducedTimeArray(self, timeArray):
         return timeArray[:self.maxReducedTimeArraySize]
+
+    def _createFilter(self):
+        return scipy.signal.firwin(self.lengthOfFilter, self.cutOffFrequencies)
 
 if __name__ == '__main__':
     analysis = DataAnalysis()

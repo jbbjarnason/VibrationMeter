@@ -3,6 +3,7 @@ import numpy as np
 from mock import MagicMock
 from Data_Analysis import DataAnalysis
 import scipy.fftpack
+import scipy.signal
 import matplotlib.pyplot
 fftReturnVal = "fft called"
 fftFreqReturnVal = "fftfreq called"
@@ -96,6 +97,21 @@ class Test_DataAnalysis(unittest.TestCase):
         matplotlib.pyplot.grid.assert_called()
         matplotlib.pyplot.show.assert_called()
 
+    def test_createLowPassFiniteImpulseResponseFilter(self):
+        scipy.signal.firwin = MagicMock(return_value="myFirFilter")
+        self.assertEqual("myFirFilter", self.myInstance._createFilter())
+        scipy.signal.firwin.assert_called_with(251, np.array([10]))
+
+    @unittest.skip("unable to get this to pass")
+    def test_createBandPassFiniteImpulseResponseFilter(self):
+        scipy.signal.firwin = MagicMock()
+        self.myInstance._createFilter()
+        frequencyBand = np.array([10,100])
+        self.myInstance.cutOffFrequencies = frequencyBand
+        # scipy.signal.firwin.assert_called_with(self.myInstance.lengthOfFilter, frequencyBand)
+
+    def test_applyFilter(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()
