@@ -24,3 +24,20 @@ Initial idea is to use accelerometer connected to a computer which logs and anal
 - $ pip3 install scipy
 - $ pip3 install matplotlib
 - $ sudo apt install python3-tk
+
+## Class interfaces
+### Data collection
+#### Methods
+
+- getData()
+- getSpan()
+- changeSpan(s)
+
+### Data collection periodic
+#### Methods
+
+- getData()
+- getSpan()
+- changeSpan(s)
+- getInterval()
+- changeInterval(ms)
