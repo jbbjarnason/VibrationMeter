@@ -1,5 +1,6 @@
 import numpy as np
 import logging
+import time
 class DataCollection:
     def __init__(self, instance=None, period_s=None):
         self._instance       = instance if instance != None else 1
@@ -19,6 +20,13 @@ class DataCollection:
     def getData(self):
         self.logger.info(msg="Returning "+str(len(self._measurements))+ " items of data")
         return {"data":self._measurements.data, "time":self._measurements.time}
+    def push(self, value):
+        if not isinstance(value, (int, float, complex)):
+            self.logger.error("Push was called with "+str(value)+" type "+str(type(value))+". Number expected.")
+            return
+        currTime = time.time()
+        self._measurements.append(value, currTime)
+        self._tryEraseOldestData(currTime)
     def getPeriod(self):
         return self._period_s
     def changePeriod(self, s=None):

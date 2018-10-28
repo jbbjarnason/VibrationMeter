@@ -56,6 +56,44 @@ class Test_DataCollection(unittest.TestCase):
         self.myInstance.changePeriod()
         self.assertEqual(self.myInstance._period_s, lastPeriod)
 
+    def test_pushDataAppendToData(self):
+        self.myInstance.push(1)
+        self.assertEqual(len(self.myInstance._measurements), 1)
+
+    def test_pushDataStoresPushedData(self):
+        self.myInstance.push(42)
+        self.assertEqual(self.myInstance._measurements.data[0], 42)
+
+    def test_pushDataStoreTimeStamp(self):
+        time.time = MagicMock(return_value=43)
+        self.myInstance.push(456486)
+        self.assertEqual(self.myInstance._measurements.time[0], 43)
+
+    def test_pushDataStoreAmountOfData(self):
+        often = 9
+        for i in range(0, often):
+            myData = random.uniform(0, 1456315)
+            myTime = i
+            self.myInstance._getData = MagicMock(return_value=myData)
+            time.time = MagicMock(return_value=myTime)
+            self.myInstance.push(myData)
+            self.assertEqual(self.myInstance._measurements.data[i], myData)
+            self.assertEqual(self.myInstance._measurements.time[i], myTime)
+        self.assertEqual(len(self.myInstance._measurements.data), often)
+
+    def test_pushTriesToEraseOldestData(self):
+        time.time = MagicMock(return_value=43)
+        self.myInstance._tryEraseOldestData = MagicMock()
+        self.myInstance.push(1)
+        self.myInstance._tryEraseOldestData.assert_called_with(time.time())
+
+    def test_pushOnlyAcceptsNumericValue(self):
+        self.myInstance.logger.error= MagicMock()
+        self.myInstance._measurements.append =MagicMock()
+        self.myInstance.push("string")
+        self.myInstance.logger.error.assert_called()
+        self.myInstance._measurements.append.assert_not_called()
+
 
 if __name__ == '__main__':
     unittest.main()

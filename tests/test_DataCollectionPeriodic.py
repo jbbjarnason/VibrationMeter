@@ -51,31 +51,11 @@ class Test_DataCollectionPeriodic(unittest.TestCase):
         self.myInstance.stopSampling()
         self.myInstance._timer.stop.assert_called_with()
 
-    def test_onTimerInterruptAppendToData(self):
-        self.myInstance._timerInterval()
-        self.assertEqual(len(self.myInstance._measurements), 1)
-
-    def test_onTimerInterruptStoreFetchedData(self):
+    def test_onTimerIntervalStoreFetchedData(self):
         self.myInstance._getData = MagicMock(return_value=42)
+        self.myInstance.pushData = MagicMock()
         self.myInstance._timerInterval()
-        self.assertEqual(self.myInstance._measurements.data[0], 42)
-
-    def test_onTimerInterruptStoreTimeStamp(self):
-        time.time = MagicMock(return_value=43)
-        self.myInstance._timerInterval()
-        self.assertEqual(self.myInstance._measurements.time[0], 43)
-
-    def test_onTimerInterruptStoreAmountOfData(self):
-        often = 9
-        for i in range(0, often):
-            myData = random.uniform(0, 1456315)
-            myTime = i
-            self.myInstance._getData = MagicMock(return_value=myData)
-            time.time = MagicMock(return_value=myTime)
-            self.myInstance._timerInterval()
-            self.assertEqual(self.myInstance._measurements.data[i], myData)
-            self.assertEqual(self.myInstance._measurements.time[i], myTime)
-        self.assertEqual(len(self.myInstance._measurements.data), often)
+        self.myInstance.pushData.assert_called_with(42)
 
     @unittest.skip("Need to call parent push data instead of repeating this test")
     def test_capMeasurementsSize(self):
