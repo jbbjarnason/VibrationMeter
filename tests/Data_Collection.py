@@ -38,6 +38,10 @@ class Measurements:
         self.data = np.array([])
         self.time = np.array([])
     def append(self, data1, time):
+        print("data")
+        print(self.data)
+        print("time")
+        print(self.time)
         self.data = np.append(self.data, data1)
         self.time = np.append(self.time, time)
     def delete(self, index):
