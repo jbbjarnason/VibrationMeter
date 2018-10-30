@@ -30,14 +30,12 @@ class Test_DataCollection(unittest.TestCase):
         testInstance = DataCollection()
         self.assertEqual(testInstance._period_s,60)
 
-    @unittest.skip("Need to implement method in parent before this test")
-    def test_capMeasurementsSize(self): 
+    def test_capMeasurementsSize(self):
         self.myInstance._period_s = 50
         often = self.myInstance._period_s * 2
         for i in range(0,often):
-            self.myInstance._getData = MagicMock(return_value=i)
-            time.time = MagicMock(return_value=i)
-            self.myInstance._timerInterval()
+            self.myInstance._measurements.append(i, i)
+            self.myInstance._tryEraseOldestData(i)
         self.assertEqual(len(self.myInstance._measurements), self.myInstance._period_s)
         self.assertEqual(self.myInstance._measurements.data[0], 50)
 

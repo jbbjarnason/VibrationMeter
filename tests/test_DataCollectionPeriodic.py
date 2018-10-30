@@ -53,20 +53,9 @@ class Test_DataCollectionPeriodic(unittest.TestCase):
 
     def test_onTimerIntervalStoreFetchedData(self):
         self.myInstance._getData = MagicMock(return_value=42)
-        self.myInstance.pushData = MagicMock()
+        self.myInstance.push = MagicMock()
         self.myInstance._timerInterval()
-        self.myInstance.pushData.assert_called_with(42)
-
-    @unittest.skip("Need to call parent push data instead of repeating this test")
-    def test_capMeasurementsSize(self):
-        self.myInstance._period_s = 50
-        often = self.myInstance._period_s * 2
-        for i in range(0, often):
-            self.myInstance._getData = MagicMock(return_value=i)
-            time.time = MagicMock(return_value=i)
-            self.myInstance._timerInterval()
-        self.assertEqual(len(self.myInstance._measurements), self.myInstance._period_s)
-        self.assertEqual(self.myInstance._measurements.data[0], 50)
+        self.myInstance.push.assert_called_with(42)
 
     def test_getInterval(self):
         self.assertEqual(self.myInstance._interval_ms, self.myInstance.getInterval())
@@ -88,7 +77,6 @@ class Test_DataCollectionPeriodic(unittest.TestCase):
         last = self.myInstance._interval_ms
         self.myInstance.changeInterval()
         self.assertEqual(self.myInstance._interval_ms, last)
-
 
 if __name__ == '__main__':
     unittest.main()

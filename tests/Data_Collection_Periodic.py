@@ -16,9 +16,7 @@ class DataCollectionPeriodic(DataCollection):
                + str(self._intervalTime) + " sec"
         self.logger.info(msg=mess)
     def _timerInterval(self):
-        currTime = time.time()
-        self._measurements.append(self._getData(), currTime)
-        self._tryEraseOldestData(currTime)
+        self.push(self._getData())
         self._timer.start()
     def _setInterval(self):
         self._intervalTime = self._interval_ms/1000.0
