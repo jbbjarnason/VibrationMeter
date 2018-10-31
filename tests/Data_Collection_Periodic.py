@@ -1,6 +1,5 @@
 from Data_Collection import DataCollection
 import threading
-import time
 import logging
 class DataCollectionPeriodic(DataCollection):
     def __init__(self, instance=None, interval_ms=None, period_s=None, callback=None):

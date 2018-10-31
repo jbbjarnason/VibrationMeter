@@ -1,7 +1,5 @@
 import unittest
 import threading
-import time
-import random
 from mock import MagicMock
 
 threading.Timer = MagicMock()
